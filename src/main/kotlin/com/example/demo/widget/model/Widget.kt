@@ -11,11 +11,11 @@ import java.time.LocalDateTime
 //
 data class Widget(
     var id: Int? = null ,
-    var x: Int,
-    var y: Int,
-    var z: Int,
-    var width: Int,
-    var height: Int,
+    var x: Int?,
+    var y: Int?,
+    var z: Int?,
+    var width: Int?,
+    var height: Int?,
     var dateLastUpdate: LocalDateTime?
 )
 
