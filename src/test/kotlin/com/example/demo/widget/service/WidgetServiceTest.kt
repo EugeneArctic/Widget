@@ -139,4 +139,135 @@ class WidgetServiceTest {
         println("z order: \n${widgetService.getAllWidgets().map { it.z }}")
         assertEquals(correctWidgetResult.map { it.z }, widgetService.getAllWidgets().map { it.z })
     }
+
+    @Test
+    fun addWidgetByZOrder5() {
+
+        val widgetService = WidgetService()
+
+        val widget1 = Widget(null,111,111,-1,111,111,null)
+        val widget2 = Widget(null,222,222,-2,222,222, null)
+        val widget3 = Widget(null,333,333,-3,333,333, null)
+        val widget4 = Widget(null,444,444,-4,444,444, null)
+
+        widgetService.createWidget(widget1)
+        widgetService.createWidget(widget2)
+        widgetService.createWidget(widget3)
+        widgetService.createWidget(widget4)
+
+
+        val newWidget = Widget(null,555,555,-2,555,555, atStartOfDay())
+        widgetService.createWidget(newWidget)
+
+
+        val correctWidgetResult = ConcurrentSkipListSet(compareBy(Widget::z)).apply {
+            addAll(
+                setOf(
+                    Widget(1, 111, 111, 0, 111, 111, atStartOfDay()),
+                    Widget(5,555,555,-1,555,555, atStartOfDay()),
+                    Widget(2, 222, 222, -2, 222, 222, atStartOfDay()),
+                    Widget(3, 333, 333, -3, 333, 333, atStartOfDay()),
+                    Widget(4, 444, 444, -4, 444, 444, atStartOfDay())
+                )
+            )
+        }
+
+        println("z order: \n${widgetService.getAllWidgets().map { it.z }}")
+        assertEquals(correctWidgetResult.map { it.z }, widgetService.getAllWidgets().map { it.z })
+    }
+
+    @Test
+    fun addWidgetByZOrder6() {
+        val widgetService = WidgetService()
+        val widget1 = Widget(null,111,111,-1,111,111,null)
+        val widget2 = Widget(null,222,222,-5,222,222, null)
+        val widget3 = Widget(null,333,333,-6,333,333, null)
+
+        widgetService.createWidget(widget1)
+        widgetService.createWidget(widget2)
+        widgetService.createWidget(widget3)
+
+        val newWidget = Widget(null,555,555,-2,555,555, atStartOfDay())
+        widgetService.createWidget(newWidget)
+
+
+        val correctWidgetResult = ConcurrentSkipListSet(compareBy(Widget::z)).apply {
+            addAll(
+                setOf(
+                    Widget(1, 111, 111, -1, 111, 111, atStartOfDay()),
+                    Widget(5,555,555,-2,555,555, atStartOfDay()),
+                    Widget(2, 222, 222, -5, 222, 222, atStartOfDay()),
+                    Widget(3, 333, 333, -6, 333, 333, atStartOfDay()),
+                )
+            )
+        }
+
+        println("z order: \n${widgetService.getAllWidgets().map { it.z }}")
+        assertEquals(correctWidgetResult.map { it.z }, widgetService.getAllWidgets().map { it.z })
+    }
+
+    @Test
+    fun addWidgetByZOrder7() {
+        val widgetService = WidgetService()
+        val widget1 = Widget(null,111,111,-1,111,111,null)
+        val widget2 = Widget(null,222,222,-2,222,222, null)
+        val widget3 = Widget(null,333,333,-4,333,333, null)
+
+        widgetService.createWidget(widget1)
+        widgetService.createWidget(widget2)
+        widgetService.createWidget(widget3)
+
+        val newWidget = Widget(null,555,555,-2,555,555, atStartOfDay())
+        widgetService.createWidget(newWidget)
+
+
+        val correctWidgetResult = ConcurrentSkipListSet(compareBy(Widget::z)).apply {
+            addAll(
+                setOf(
+                    Widget(1, 111, 111, 0, 111, 111, atStartOfDay()),
+                    Widget(5,555,555,-1,555,555, atStartOfDay()),
+                    Widget(2, 222, 222, -2, 222, 222, atStartOfDay()),
+                    Widget(3, 333, 333, -4, 333, 333, atStartOfDay()),
+                )
+            )
+        }
+
+        println("z order: \n${widgetService.getAllWidgets().map { it.z }}")
+        assertEquals(correctWidgetResult.map { it.z }, widgetService.getAllWidgets().map { it.z })
+    }
+
+
+    @Test
+    fun addWidgetByZOrder8() {
+        val widgetService = WidgetService()
+        val widget1 = Widget(null,111,111,-10,111,111,null)
+        val widget2 = Widget(null,222,222,20,222,222, null)
+        val widget3 = Widget(null,333,333,5,333,333, null)
+
+        widgetService.createWidget(widget1)
+        widgetService.createWidget(widget2)
+        widgetService.createWidget(widget3)
+
+        val newWidget = Widget(null,555,555,-10,555,555, atStartOfDay())
+        widgetService.createWidget(newWidget)
+
+
+        val correctWidgetResult = ConcurrentSkipListSet(compareBy(Widget::z)).apply {
+            addAll(
+                setOf(
+                    Widget(1, 111, 111, -9, 111, 111, atStartOfDay()),
+                    Widget(5,555,555,-10,555,555, atStartOfDay()),
+                    Widget(2, 222, 222, 20, 222, 222, atStartOfDay()),
+                    Widget(3, 333, 333, 5, 333, 333, atStartOfDay()),
+                )
+            )
+        }
+
+        println("z order: \n${widgetService.getAllWidgets().map { it.z }}")
+        assertEquals(correctWidgetResult.map { it.z }, widgetService.getAllWidgets().map { it.z })
+    }
+
 }
+
+
+

@@ -65,12 +65,26 @@ class WidgetService {
 //        require(widgetList.none { it.z == widget.z }) { throw ParameterValueNotUnique(widget.z.toString()) }
     }
 
+
+
+
+
+
+
     fun addWidgetByZOrder(widget: Widget) {
         val updateWidget = widgetList.find { it.z == widget.z }
+        var previousZ = 0
+
+
         if (updateWidget != null) {
             widgetList.tailSet(updateWidget).forEachIndexed { _, widget1 ->
-                widget1.z = widget1.z?.plus(1)
+                    val nextZ =  widget1.z?.plus(1)!!
+                    if (previousZ == 0 || (nextZ - previousZ) == 1) {
+                        widget1.z = nextZ
+                    }
+                    previousZ = widget1.z!!
             }
+
         }
 
         widgetList.add(widget)
