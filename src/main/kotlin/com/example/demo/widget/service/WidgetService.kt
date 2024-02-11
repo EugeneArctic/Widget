@@ -2,7 +2,6 @@ package com.example.demo.widget.service
 
 import com.example.demo.widget.exception.ParameterValueIsNegative
 import com.example.demo.widget.exception.ParameterValueNotFound
-import com.example.demo.widget.exception.ParameterValueNotUnique
 import com.example.demo.widget.model.Widget
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -77,13 +76,6 @@ class WidgetService {
         widgetList.add(widget)
     }
 
-
-
-    fun allWidgetSetDateForTest(date:LocalDateTime){
-        widgetList.forEach {
-            it.dateLastUpdate = date
-        }
-    }
 
     fun getAllWidgets() = widgetList.toList() //widgetList.values
 
