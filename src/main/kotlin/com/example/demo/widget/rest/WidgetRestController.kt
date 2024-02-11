@@ -23,6 +23,7 @@ class WidgetRestController() {
 
     @PostMapping
     fun postMethod(@RequestBody widget: Widget):ResponseEntity<Widget> {
+        widgetService.checkValidParameters(widget)
         val newWidget = widgetService.createWidget(widget)
         return ResponseEntity(newWidget, HttpStatus.CREATED)
     }
@@ -30,6 +31,7 @@ class WidgetRestController() {
     @ExceptionHandler(value = [ParameterValueNotFound::class])
     fun handleParameterIsNull(ex: ParameterValueNotFound): ResponseEntity<ApiError> {
         val error = ApiError(400, ex.message ?: "Ошибка в параметрах" )
+        println(" Ошибка проверки параметров: ${ex.message}")
         return ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
     }
 
@@ -46,7 +48,7 @@ class WidgetRestController() {
     }
 
     @GetMapping
-    fun getMethod(): MutableCollection<Widget> {
+    fun getMethod(): List<Widget> {
         return widgetService.getAllWidgets()
     }
 
