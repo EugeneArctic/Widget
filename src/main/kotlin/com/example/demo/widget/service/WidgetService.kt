@@ -12,9 +12,17 @@ import java.util.concurrent.ConcurrentSkipListSet
 class WidgetService {
 
     private var indexWidget: Int = 0
-    private val widgetList = ConcurrentSkipListSet(compareBy(Widget::z))//     private val widgetList = TreeSet(compareBy(Widget::z)) // для провоцирования гонки
+    private val widgetList = ConcurrentSkipListSet(compareBy(Widget::z)) //private val widgetList = TreeSet(compareBy(Widget::z)) // для провоцирования гонки
 
 
+    @Synchronized
+    fun deleteWidget(id:Int):Widget?{
+        val foundWidget = findWidgetById(id)
+        if (foundWidget != null) {
+            widgetList.remove(foundWidget)
+        }
+        return foundWidget
+    }
 
 
     @Synchronized
@@ -26,6 +34,7 @@ class WidgetService {
         return foundWidget
     }
 
+    @Synchronized
     fun createWidget(widget: Widget): Widget {
         if (widget.id == null) {
             indexWidget++

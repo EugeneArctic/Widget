@@ -1,6 +1,7 @@
 package com.example.demo.widget.rest
 
 import com.example.demo.widget.exception.*
+import com.example.demo.widget.model.DeleteWidget
 import com.example.demo.widget.model.Widget
 import com.example.demo.widget.service.WidgetService
 import org.springframework.http.HttpStatus
@@ -17,7 +18,10 @@ import org.springframework.web.bind.annotation.*
 class WidgetRestController() {
 
     val widgetService = WidgetService()
-
+    @GetMapping
+    fun getAllWidgetsMethod(): List<Widget> {
+        return widgetService.getAllWidgets()
+    }
     @PostMapping
     fun postMethod(@RequestBody widget: Widget):ResponseEntity<Widget> {
         widgetService.checkValidParameters(widget)
@@ -32,6 +36,15 @@ class WidgetRestController() {
         val updateWidget = widgetService.updateWidget(id,widget)
         return ResponseEntity(updateWidget, HttpStatus.CREATED)
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteMethod(@PathVariable id: Int): ResponseEntity<DeleteWidget?> {
+        widgetService.checkIdCorrect(id)
+        val updateWidget = widgetService.deleteWidget(id)
+        val answer = updateWidget?.let { DeleteWidget("widget with id = $id was deleted", it) }
+        return ResponseEntity(answer, HttpStatus.CREATED)
+    }
+
 
     @ExceptionHandler(value = [WidgetNotFound::class])
     fun handleNotFoundWidget(ex: WidgetNotFound): ResponseEntity<ApiError> {
@@ -60,10 +73,7 @@ class WidgetRestController() {
         return ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
     }
 
-    @GetMapping
-    fun getMethod(): List<Widget> {
-        return widgetService.getAllWidgets()
-    }
+
 
 
 }
