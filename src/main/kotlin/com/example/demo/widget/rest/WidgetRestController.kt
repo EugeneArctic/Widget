@@ -22,6 +22,14 @@ class WidgetRestController() {
     fun getAllWidgetsMethod(): List<Widget> {
         return widgetService.getAllWidgets()
     }
+
+    @GetMapping("/{id}")
+    fun getWidgetsById(@PathVariable id: Int):  ResponseEntity<Widget?> {
+        widgetService.checkIdCorrect(id)
+        val widget = widgetService.getWidgetById(id)
+        return ResponseEntity(widget, HttpStatus.CREATED)
+    }
+
     @PostMapping
     fun postMethod(@RequestBody widget: Widget):ResponseEntity<Widget> {
         widgetService.checkValidParameters(widget)

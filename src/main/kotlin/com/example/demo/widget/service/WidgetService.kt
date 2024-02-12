@@ -16,6 +16,11 @@ class WidgetService {
 
 
     @Synchronized
+    fun getWidgetById(id: Int): Widget? {
+        return findWidgetById(id)
+    }
+
+    @Synchronized
     fun deleteWidget(id:Int):Widget?{
         val foundWidget = findWidgetById(id)
         if (foundWidget != null) {
