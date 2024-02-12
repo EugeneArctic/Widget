@@ -86,16 +86,4 @@ class WidgetRestController() {
 
 }
 
-//    @PostMapping
-//    fun postMethod(@RequestBody widget: Widget): ResponseEntity<out Any> {
-//        val response = try {
-//            val newWidget = widgetService.createWidget(widget)
-//            ResponseEntity(newWidget, HttpStatus.CREATED)
-//        } catch (e: Exception) {
-//            val error = ApiError(400, "ошибка")
-//            ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
-//        }
-//
-//        return response
-//    }
 
