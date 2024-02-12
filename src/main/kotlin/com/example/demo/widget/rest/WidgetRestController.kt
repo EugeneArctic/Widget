@@ -27,7 +27,7 @@ class WidgetRestController() {
     fun getWidgetsById(@PathVariable id: Int):  ResponseEntity<Widget?> {
         widgetService.checkIdCorrect(id)
         val widget = widgetService.getWidgetById(id)
-        return ResponseEntity(widget, HttpStatus.CREATED)
+        return ResponseEntity(widget, HttpStatus.OK)
     }
 
     @PostMapping
@@ -50,7 +50,7 @@ class WidgetRestController() {
         widgetService.checkIdCorrect(id)
         val updateWidget = widgetService.deleteWidget(id)
         val answer = updateWidget?.let { DeleteWidget("widget with id = $id was deleted", it) }
-        return ResponseEntity(answer, HttpStatus.CREATED)
+        return ResponseEntity(answer, HttpStatus.NO_CONTENT)
     }
 
 
