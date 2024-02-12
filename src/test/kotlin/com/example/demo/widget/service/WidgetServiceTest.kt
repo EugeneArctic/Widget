@@ -1,10 +1,8 @@
 package com.example.demo.widget.service
 
 import com.example.demo.widget.model.Widget
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
-import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentSkipListSet
 
 class WidgetServiceTest {
