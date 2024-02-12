@@ -1,10 +1,7 @@
 package com.example.demo.widget.rest
 
+import com.example.demo.widget.exception.*
 import com.example.demo.widget.model.Widget
-import com.example.demo.widget.exception.ApiError
-import com.example.demo.widget.exception.ParameterValueIsNegative
-import com.example.demo.widget.exception.ParameterValueNotFound
-import com.example.demo.widget.exception.ParameterValueNotUnique
 import com.example.demo.widget.service.WidgetService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,6 +24,22 @@ class WidgetRestController() {
         val newWidget = widgetService.createWidget(widget)
         return ResponseEntity(newWidget, HttpStatus.CREATED)
     }
+
+    @PutMapping("/{id}")
+    fun putMethod(@PathVariable id: Int, @RequestBody widget: Widget): ResponseEntity<Widget?> {
+        widgetService.checkIdCorrect(id)
+        widgetService.checkValidParameters(widget)
+        val updateWidget = widgetService.updateWidget(id,widget)
+        return ResponseEntity(updateWidget, HttpStatus.CREATED)
+    }
+
+    @ExceptionHandler(value = [WidgetNotFound::class])
+    fun handleNotFoundWidget(ex: WidgetNotFound): ResponseEntity<ApiError> {
+        val error = ApiError(400, ex.message ?: "Ошибка в параметрах" )
+        println(" Ошибка проверки параметров: ${ex.message}")
+        return ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
+    }
+
 
     @ExceptionHandler(value = [ParameterValueNotFound::class])
     fun handleParameterIsNull(ex: ParameterValueNotFound): ResponseEntity<ApiError> {
