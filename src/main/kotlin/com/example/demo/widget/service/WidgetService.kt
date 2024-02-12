@@ -95,7 +95,7 @@ class WidgetService {
 
 
     fun checkIdCorrect(id: Int){
-        requireNotNull(findWidgetById(id)){throw WidgetNotFound(id.toString())}
+        requireNotNull(findWidgetById(id)){ throw WidgetNotFound(id.toString()) }
 
     }
 
