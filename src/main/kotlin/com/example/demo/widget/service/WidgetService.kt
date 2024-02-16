@@ -14,17 +14,17 @@ import java.time.LocalDateTime
 class WidgetService(@Autowired private val widgetRepository: WidgetRepository) {
 
     @Synchronized
-    fun getWidgetById(id: Int): Widget? {
+    fun getWidgetById(id: Long): Widget? {
         return widgetRepository.findById(id)
     }
 
     @Synchronized
-    fun deleteWidget(id: Int): Widget? {
+    fun deleteWidget(id: Long): Widget? {
         return widgetRepository.delete(id)
     }
 
     @Synchronized
-    fun updateWidget(id: Int, widgetDTO: WidgetDTO): Widget? {
+    fun updateWidget(id: Long, widgetDTO: WidgetDTO): Widget? {
         transformToWidget(widgetDTO)
         val updateWidget = widgetRepository.findById(id)
         updateWidget?.let {
@@ -102,7 +102,7 @@ class WidgetService(@Autowired private val widgetRepository: WidgetRepository) {
     }
 
 
-    fun checkIdCorrect(id: Int) {
+    fun checkIdCorrect(id: Long) {
         requireNotNull(widgetRepository.findById(id)) { throw WidgetNotFound(id.toString()) }
     }
 

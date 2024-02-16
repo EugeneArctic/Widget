@@ -11,7 +11,7 @@ class WidgetRepository {
     private val widgetList =
         ConcurrentSkipListSet(compareBy(Widget::zIndex)) //private val widgetList = TreeSet(compareBy(Widget::z)) // для провоцирования гонки
 
-    fun findById(id: Int) = widgetList.find { it.id.toInt() == id }
+    fun findById(id: Long) = widgetList.find { it.id == id }
     fun findAll() = widgetList//widgetList.sortedBy { it.z }
 
     fun create(widget: Widget): Widget {
@@ -24,7 +24,7 @@ class WidgetRepository {
     }
 
 
-    fun delete(id: Int): Widget? {
+    fun delete(id: Long): Widget? {
         val deletedWidget = findById(id)
         if (deletedWidget != null) {
             widgetList.remove(deletedWidget)
@@ -33,7 +33,7 @@ class WidgetRepository {
     }
 
 
-    fun update(id:Int, widget: Widget): Widget? {
+    fun update(id:Long, widget: Widget): Widget? {
         val foundWidget = findById(id)
         foundWidget?.apply {
             zIndex = widget.zIndex

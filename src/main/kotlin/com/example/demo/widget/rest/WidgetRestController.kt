@@ -20,7 +20,7 @@ class WidgetRestController(@Autowired private val widgetService: WidgetService) 
     }
 
     @GetMapping("/{id}")
-    fun getWidgetsById(@PathVariable id: Int): ResponseEntity<Widget?> {
+    fun getWidgetsById(@PathVariable id: Long): ResponseEntity<Widget?> {
         widgetService.checkIdCorrect(id)
         val widget = widgetService.getWidgetById(id)
         return ResponseEntity(widget, HttpStatus.OK)
@@ -34,7 +34,7 @@ class WidgetRestController(@Autowired private val widgetService: WidgetService) 
     }
 
     @PutMapping("/{id}")
-    fun putWidget(@PathVariable id: Int, @RequestBody widget: WidgetDTO): ResponseEntity<Widget?> {
+    fun putWidget(@PathVariable id: Long, @RequestBody widget: WidgetDTO): ResponseEntity<Widget?> {
         widgetService.checkIdCorrect(id)
         widgetService.checkValidParameters(widget)
         val updateWidget = widgetService.updateWidget(id, widget)
@@ -42,7 +42,7 @@ class WidgetRestController(@Autowired private val widgetService: WidgetService) 
     }
 
     @DeleteMapping("/{id}")
-    fun deleteWidget(@PathVariable id: Int): ResponseEntity<Widget?> {
+    fun deleteWidget(@PathVariable id: Long): ResponseEntity<Widget?> {
         widgetService.checkIdCorrect(id)
         val updateWidget = widgetService.deleteWidget(id)
 

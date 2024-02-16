@@ -20,7 +20,7 @@ class WidgetConcurrentReadTest() {
     @Test
     fun concurrentlyReadingWidget(): Unit = runBlocking {
         val widgetService = WidgetService(widgetRepository)
-        val widgetId = 5
+        val widgetId = 5L
 
         val updateRequest1 = WidgetDTO(
             id = widgetId, x = 100, y = -100, zIndex = 1, width = 20, height = 20, dateLastUpdate = LocalDateTime.now()
