@@ -1,7 +1,6 @@
 package com.example.demo.widget.rest
 
 import com.example.demo.widget.exception.*
-import com.example.demo.widget.model.DeleteWidget
 import com.example.demo.widget.model.Widget
 import com.example.demo.widget.service.WidgetService
 import org.springframework.http.HttpStatus
@@ -47,11 +46,11 @@ class WidgetRestController() {
     }
 
     @DeleteMapping("/{id}")
-    fun deleteMethod(@PathVariable id: Int): ResponseEntity<DeleteWidget?> {
+    fun deleteMethod(@PathVariable id: Int): ResponseEntity<Widget?> {
         widgetService.checkIdCorrect(id)
         val updateWidget = widgetService.deleteWidget(id)
-        val answer = updateWidget?.let { DeleteWidget("widget with id = $id was deleted", it) }
-        return ResponseEntity(answer, HttpStatus.NO_CONTENT)
+
+        return ResponseEntity(updateWidget, HttpStatus.NO_CONTENT)
     }
 
 
