@@ -4,70 +4,82 @@ import com.example.demo.widget.exception.ParameterValueIsNegative
 import com.example.demo.widget.exception.ParameterValueNotFound
 import com.example.demo.widget.exception.WidgetNotFound
 import com.example.demo.widget.model.Widget
+import com.example.demo.widget.model.WidgetDTO
+import com.example.demo.widget.repository.WidgetRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.util.concurrent.ConcurrentSkipListSet
 
 @Service
-class WidgetService {
-
-    private var indexWidget: Int = 0
-    private val widgetList =
-        ConcurrentSkipListSet(compareBy(Widget::z)) //private val widgetList = TreeSet(compareBy(Widget::z)) // для провоцирования гонки
-
+class WidgetService(@Autowired private val widgetRepository: WidgetRepository) {
 
     @Synchronized
-    fun getWidgetById(id: Int): Widget? {
-        return findWidgetById(id)
+    fun getWidgetById(id: Long): Widget? {
+        return widgetRepository.findById(id)
     }
 
     @Synchronized
-    fun deleteWidget(id: Int): Widget? {
-        val foundWidget = findWidgetById(id)
-        if (foundWidget != null) {
-            widgetList.remove(foundWidget)
-        }
-        return foundWidget
-    }
-
-
-    @Synchronized
-    fun updateWidget(id: Int, widget: Widget): Widget? {
-        val foundWidget = findWidgetById(id)
-        if (foundWidget != null) {
-            rewriteWidgetParameters(widget, foundWidget)
-        }
-        return foundWidget
+    fun deleteWidget(id: Long): Widget? {
+        return widgetRepository.delete(id)
     }
 
     @Synchronized
-    fun createWidget(widget: Widget): Widget {
-        if (widget.id == null) {
-            indexWidget++
-            widget.id = indexWidget
+    fun updateWidget(id: Long, widgetDTO: WidgetDTO): Widget? {
+        transformToWidget(widgetDTO)
+        val updateWidget = widgetRepository.findById(id)
+        updateWidget?.let {
+            val widget = handlerForNullZ(widgetDTO)
+            widget.id = it.id
+            changeZIndexWidgetListForUpdate(widget)
+            widgetRepository.update(id,widget)
         }
+        return updateWidget
+    }
 
-        handlerForNullZ(widget)
-        widget.dateLastUpdate = LocalDateTime.now()
-        addWidgetByZOrder(widget)
+    private fun transformToWidget(widgetDTO: WidgetDTO): Widget {
+        val widget = widgetDTO.let { dto ->
+            Widget(
+                id = dto.id ?: -1,
+                x = dto.x ?: -1,
+                y = dto.y ?: -1,
+                zIndex = dto.zIndex ?: -1,
+                width = dto.width ?: -1,
+                height = dto.height ?: -1,
+                dateLastUpdate = dto.dateLastUpdate ?: LocalDateTime.now().minusDays(1)
+            )
+        }
         return widget
     }
 
-    private fun handlerForNullZ(widget: Widget) {
-        if (widget.z == null) {
-            if (widgetList.isNotEmpty()) {
-                val maxZ = widgetList.maxBy { it.z!! }.z?.plus(1)
-                widget.z = maxZ
-            } else {
-                widget.z = 1
-            }
+
+    @Synchronized
+    fun createWidget(widgetDTO: WidgetDTO): Widget {
+        val widget = if (widgetDTO.zIndex == null) {
+            handlerForNullZ(widgetDTO)
+        } else {
+            transformToWidget(widgetDTO)
         }
+        changeZIndexWidgetList(widget)
+        widget.dateLastUpdate = LocalDateTime.now()
+        widgetRepository.create(widget)
+        return widget
     }
 
-    fun checkValidParameters(widget: Widget) {
+    private fun handlerForNullZ(widgetDTO: WidgetDTO):Widget {
+            val widgetConcurrentSkipListSet = widgetRepository.findAll()
+            if (widgetConcurrentSkipListSet.isNotEmpty()) {
+                val maxZ = widgetConcurrentSkipListSet.maxBy { it.zIndex }.zIndex.plus(1)
+                widgetDTO.zIndex = maxZ
+            } else {
+                widgetDTO.zIndex = 1
+            }
+
+        return transformToWidget(widgetDTO)
+    }
+
+    fun checkValidParameters(widget: WidgetDTO) {
         val nullValueParameterList = listOf(
             "x" to widget.x, "y" to widget.y,
-//          "z" to widget.z,
             "height" to widget.height, "width" to widget.width
         ).filter { it.second == null }
 
@@ -87,66 +99,46 @@ class WidgetService {
                 ", "
             ) { "«${it.first}»" })
         }
-//        require(widgetList.none { it.z == widget.z }) { throw ParameterValueNotUnique(widget.z.toString()) }
     }
 
 
-    fun checkIdCorrect(id: Int) {
-        requireNotNull(findWidgetById(id)) { throw WidgetNotFound(id.toString()) }
-
+    fun checkIdCorrect(id: Long) {
+        requireNotNull(widgetRepository.findById(id)) { throw WidgetNotFound(id.toString()) }
     }
 
-
-    fun addWidgetByZOrder(widget: Widget) {
-        changeZIndexWidgetList(widget)
-        widgetList.add(widget)
-    }
-
-
-    private fun changeZIndexWidgetList(widget: Widget) {
-        val updateWidget = widgetList.find { it.z == widget.z }
-        var previousZ = 0
-
-        if (updateWidget != null) {
-            widgetList.tailSet(updateWidget).forEachIndexed { _, widget1 ->
-                val nextZ = widget1.z?.plus(1)!!
-                if (previousZ == 0 || (nextZ - previousZ) == 1) {
-                    widget1.z = nextZ
-                }
-                previousZ = widget1.z!!
-            }
-        }
-    }
 
     private fun changeZIndexWidgetListForUpdate(updateWidget: Widget) {
         var previousZ = 0
-        widgetList.tailSet(updateWidget).forEachIndexed { _, widget1 ->
-            val nextZ = widget1.z?.plus(1)!!
+        widgetRepository.findAll().tailSet(updateWidget).forEachIndexed { _, widget1 ->
+            val nextZ = widget1.zIndex.plus(1)
             if (widget1 != updateWidget && previousZ == 0 || (nextZ - previousZ) == 1) {
-                widget1.z = nextZ
+                widget1.zIndex = nextZ
             }
-            previousZ = widget1.z!!
+            previousZ = widget1.zIndex
         }
         //Если z предыдущего элемента меньше на единицу текущего (z + 1 ) то мы наращиваем текущий z = z+1
         //Если разница текущего (z + 1 ) и предыдущего z больше или меньше 1 то мы не нарщиваем текущий z
     }
 
 
-    fun getAllWidgets() = widgetList.sortedBy { it.z }//widgetList.values
+    fun getAllWidgets() = widgetRepository.findAll()//widgetList.values
 
-    fun findWidgetById(id: Int) = widgetList.find { it.id == id }
 
-    fun rewriteWidgetParameters(newParametersWidget: Widget, foundWidget: Widget) {
-        foundWidget.apply {
-            z = newParametersWidget.z
-            x = newParametersWidget.x
-            y = newParametersWidget.y
-            width = newParametersWidget.width
-            height = newParametersWidget.height
-            dateLastUpdate = LocalDateTime.now()
+    private fun changeZIndexWidgetList(widget: Widget) {
+        val widgetConcurrentSkipListSet = widgetRepository.findAll()
+        val updateWidget =  widgetConcurrentSkipListSet.find { it.zIndex == widget.zIndex }
+        var previousZ = 0
+        if (updateWidget != null) {
+            widgetConcurrentSkipListSet.tailSet(updateWidget).forEachIndexed { _, widget1 ->
+                val nextZ = widget1.zIndex.plus(1)
+                if (previousZ == 0 || (nextZ - previousZ) == 1) {
+                    widget1.zIndex = nextZ
+                }
+                previousZ = widget1.zIndex
+            }
         }
-        handlerForNullZ(foundWidget)
-        changeZIndexWidgetListForUpdate(foundWidget)
     }
+
+
 }
 
