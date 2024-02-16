@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicInteger
+
 @SpringBootTest
 class WidgetConcurrentReadTest {
 
@@ -16,34 +17,16 @@ class WidgetConcurrentReadTest {
         val widgetId = 5
 
         val updateRequest1 = Widget(
-            id = widgetId,
-            x = 100,
-            y = -100,
-            z = 1,
-            width = 20,
-            height = 20,
-            dateLastUpdate = LocalDateTime.now()
+            id = widgetId, x = 100, y = -100, z = 1, width = 20, height = 20, dateLastUpdate = LocalDateTime.now()
         )
         val updateRequest2 = Widget(
-            id = widgetId,
-            x = -100,
-            y = 100,
-            z = 3,
-            width = 20,
-            height = 20,
-            dateLastUpdate = LocalDateTime.now()
+            id = widgetId, x = -100, y = 100, z = 3, width = 20, height = 20, dateLastUpdate = LocalDateTime.now()
         )
 
         // Предполагается, что createWidget создает новый виджет с указанным ID
         widgetService.createWidget(
             Widget(
-                id = widgetId,
-                x = 100,
-                y = -100,
-                z = 1,
-                width = 20,
-                height = 20,
-                dateLastUpdate = null
+                id = widgetId, x = 100, y = -100, z = 1, width = 20, height = 20, dateLastUpdate = null
             )
         )
 
@@ -60,7 +43,7 @@ class WidgetConcurrentReadTest {
 
             listUpdateRequest.shuffled().forEach { widget ->
                 launch(Dispatchers.Default) {
-                   val widget = widgetService.updateWidget(widgetId, widget)
+                    val widget = widgetService.updateWidget(widgetId, widget)
                     println("${Thread.currentThread().name} widget: $widget ${LocalDateTime.now()}")
                 }
             }

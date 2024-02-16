@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 //уникальный идентификатор.
 //
 data class Widget(
-    var id: Int? = null ,
+    var id: Int? = null,
     var x: Int?,
     var y: Int?,
     var z: Int?,

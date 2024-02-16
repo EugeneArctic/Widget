@@ -18,20 +18,21 @@ import org.springframework.web.bind.annotation.*
 class WidgetRestController() {
 
     val widgetService = WidgetService()
+
     @GetMapping
     fun getAllWidgetsMethod(): List<Widget> {
         return widgetService.getAllWidgets()
     }
 
     @GetMapping("/{id}")
-    fun getWidgetsById(@PathVariable id: Int):  ResponseEntity<Widget?> {
+    fun getWidgetsById(@PathVariable id: Int): ResponseEntity<Widget?> {
         widgetService.checkIdCorrect(id)
         val widget = widgetService.getWidgetById(id)
         return ResponseEntity(widget, HttpStatus.OK)
     }
 
     @PostMapping
-    fun postMethod(@RequestBody widget: Widget):ResponseEntity<Widget> {
+    fun postMethod(@RequestBody widget: Widget): ResponseEntity<Widget> {
         widgetService.checkValidParameters(widget)
         val newWidget = widgetService.createWidget(widget)
         return ResponseEntity(newWidget, HttpStatus.CREATED)
@@ -41,7 +42,7 @@ class WidgetRestController() {
     fun putMethod(@PathVariable id: Int, @RequestBody widget: Widget): ResponseEntity<Widget?> {
         widgetService.checkIdCorrect(id)
         widgetService.checkValidParameters(widget)
-        val updateWidget = widgetService.updateWidget(id,widget)
+        val updateWidget = widgetService.updateWidget(id, widget)
         return ResponseEntity(updateWidget, HttpStatus.CREATED)
     }
 
@@ -56,7 +57,7 @@ class WidgetRestController() {
 
     @ExceptionHandler(value = [WidgetNotFound::class])
     fun handleNotFoundWidget(ex: WidgetNotFound): ResponseEntity<ApiError> {
-        val error = ApiError(400, ex.message ?: "Ошибка в параметрах" )
+        val error = ApiError(400, ex.message ?: "Ошибка в параметрах")
         println(" Ошибка проверки параметров: ${ex.message}")
         return ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
     }
@@ -64,24 +65,22 @@ class WidgetRestController() {
 
     @ExceptionHandler(value = [ParameterValueNotFound::class])
     fun handleParameterIsNull(ex: ParameterValueNotFound): ResponseEntity<ApiError> {
-        val error = ApiError(400, ex.message ?: "Ошибка в параметрах" )
+        val error = ApiError(400, ex.message ?: "Ошибка в параметрах")
         println(" Ошибка проверки параметров: ${ex.message}")
         return ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
     }
 
     @ExceptionHandler(value = [ParameterValueIsNegative::class])
     fun handleParameterIsNegative(ex: ParameterValueIsNegative): ResponseEntity<ApiError> {
-        val error = ApiError(400, ex.message ?: "Отрицательное значение" )
+        val error = ApiError(400, ex.message ?: "Отрицательное значение")
         return ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
     }
 
     @ExceptionHandler(value = [ParameterValueNotUnique::class])
     fun handleParameterIsNotUnique(ex: ParameterValueNotUnique): ResponseEntity<ApiError> {
-        val error = ApiError(400, ex.message ?: "Параметр Z не уникальный" )
+        val error = ApiError(400, ex.message ?: "Параметр Z не уникальный")
         return ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
     }
-
-
 
 
 }

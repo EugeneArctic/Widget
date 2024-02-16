@@ -12,7 +12,8 @@ import java.util.concurrent.ConcurrentSkipListSet
 class WidgetService {
 
     private var indexWidget: Int = 0
-    private val widgetList = ConcurrentSkipListSet(compareBy(Widget::z)) //private val widgetList = TreeSet(compareBy(Widget::z)) // для провоцирования гонки
+    private val widgetList =
+        ConcurrentSkipListSet(compareBy(Widget::z)) //private val widgetList = TreeSet(compareBy(Widget::z)) // для провоцирования гонки
 
 
     @Synchronized
@@ -21,7 +22,7 @@ class WidgetService {
     }
 
     @Synchronized
-    fun deleteWidget(id:Int):Widget?{
+    fun deleteWidget(id: Int): Widget? {
         val foundWidget = findWidgetById(id)
         if (foundWidget != null) {
             widgetList.remove(foundWidget)
@@ -34,7 +35,7 @@ class WidgetService {
     fun updateWidget(id: Int, widget: Widget): Widget? {
         val foundWidget = findWidgetById(id)
         if (foundWidget != null) {
-            rewriteWidgetParameters(widget,foundWidget)
+            rewriteWidgetParameters(widget, foundWidget)
         }
         return foundWidget
     }
@@ -65,17 +66,14 @@ class WidgetService {
 
     fun checkValidParameters(widget: Widget) {
         val nullValueParameterList = listOf(
-            "x" to widget.x,
-            "y" to widget.y,
+            "x" to widget.x, "y" to widget.y,
 //          "z" to widget.z,
-            "height" to widget.height,
-            "width" to widget.width
+            "height" to widget.height, "width" to widget.width
         ).filter { it.second == null }
 
         val negativeValueParameterList = if (nullValueParameterList.isEmpty() || nullValueParameterList.any {
                 it !in (listOf(
-                    "height" to widget.height,
-                    "width" to widget.width
+                    "height" to widget.height, "width" to widget.width
                 ))
             }) {
             listOf("height" to widget.height, "width" to widget.width).filter { it.second!! < 0 }
@@ -85,17 +83,16 @@ class WidgetService {
 
         require(nullValueParameterList.isEmpty()) { throw ParameterValueNotFound(nullValueParameterList.joinToString(", ") { "«${it.first}»" }) }
         require(negativeValueParameterList.isEmpty()) {
-            throw ParameterValueIsNegative(
-                negativeValueParameterList.joinToString(
-                    ", "
-                ) { "«${it.first}»" })
+            throw ParameterValueIsNegative(negativeValueParameterList.joinToString(
+                ", "
+            ) { "«${it.first}»" })
         }
 //        require(widgetList.none { it.z == widget.z }) { throw ParameterValueNotUnique(widget.z.toString()) }
     }
 
 
-    fun checkIdCorrect(id: Int){
-        requireNotNull(findWidgetById(id)){ throw WidgetNotFound(id.toString()) }
+    fun checkIdCorrect(id: Int) {
+        requireNotNull(findWidgetById(id)) { throw WidgetNotFound(id.toString()) }
 
     }
 
@@ -125,7 +122,7 @@ class WidgetService {
         var previousZ = 0
         widgetList.tailSet(updateWidget).forEachIndexed { _, widget1 ->
             val nextZ = widget1.z?.plus(1)!!
-            if (widget1!= updateWidget && previousZ == 0 || (nextZ - previousZ) == 1) {
+            if (widget1 != updateWidget && previousZ == 0 || (nextZ - previousZ) == 1) {
                 widget1.z = nextZ
             }
             previousZ = widget1.z!!
@@ -137,9 +134,9 @@ class WidgetService {
 
     fun getAllWidgets() = widgetList.sortedBy { it.z }//widgetList.values
 
-    fun findWidgetById(id: Int) = widgetList.find { it.id == id}
+    fun findWidgetById(id: Int) = widgetList.find { it.id == id }
 
-    fun rewriteWidgetParameters(newParametersWidget: Widget, foundWidget:Widget) {
+    fun rewriteWidgetParameters(newParametersWidget: Widget, foundWidget: Widget) {
         foundWidget.apply {
             z = newParametersWidget.z
             x = newParametersWidget.x
