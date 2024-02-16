@@ -1,7 +1,12 @@
 package com.example.demo.widget.service
 
 import com.example.demo.widget.model.Widget
-import kotlinx.coroutines.*
+import com.example.demo.widget.model.WidgetDTO
+import com.example.demo.widget.repository.WidgetRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
@@ -9,24 +14,25 @@ import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicInteger
 
 @SpringBootTest
-class WidgetConcurrentReadTest {
+class WidgetConcurrentReadTest() {
+    val widgetRepository = WidgetRepository()
 
     @Test
     fun concurrentlyReadingWidget(): Unit = runBlocking {
-        val widgetService = WidgetService()
+        val widgetService = WidgetService(widgetRepository)
         val widgetId = 5
 
-        val updateRequest1 = Widget(
-            id = widgetId, x = 100, y = -100, z = 1, width = 20, height = 20, dateLastUpdate = LocalDateTime.now()
+        val updateRequest1 = WidgetDTO(
+            id = widgetId, x = 100, y = -100, zIndex = 1, width = 20, height = 20, dateLastUpdate = LocalDateTime.now()
         )
-        val updateRequest2 = Widget(
-            id = widgetId, x = -100, y = 100, z = 3, width = 20, height = 20, dateLastUpdate = LocalDateTime.now()
+        val updateRequest2 = WidgetDTO(
+            id = widgetId, x = -100, y = 100, zIndex = 3, width = 20, height = 20, dateLastUpdate = LocalDateTime.now()
         )
 
         // Предполагается, что createWidget создает новый виджет с указанным ID
         widgetService.createWidget(
-            Widget(
-                id = widgetId, x = 100, y = -100, z = 1, width = 20, height = 20, dateLastUpdate = null
+            WidgetDTO(
+                id = widgetId, x = 100, y = -100, zIndex = 1, width = 20, height = 20, dateLastUpdate = null
             )
         )
 

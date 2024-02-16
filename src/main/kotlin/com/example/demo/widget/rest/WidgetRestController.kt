@@ -2,25 +2,21 @@ package com.example.demo.widget.rest
 
 import com.example.demo.widget.exception.*
 import com.example.demo.widget.model.Widget
+import com.example.demo.widget.model.WidgetDTO
 import com.example.demo.widget.service.WidgetService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 
-//Атрибуты виджета не должны быть пустыми.
-//Z-индекс — это уникальная последовательность, общая для всех виджетов, которая определяет порядок виджетов
-//(независимо от их координат).
-//Допускаются промежутки. Чем выше значение, тем выше виджет находится на плоскости.
 @RestController
 @RequestMapping(value = ["/widget"])
-class WidgetRestController() {
-
-    val widgetService = WidgetService()
+class WidgetRestController(@Autowired private val widgetService: WidgetService) {
 
     @GetMapping
     fun getAllWidgetsMethod(): List<Widget> {
-        return widgetService.getAllWidgets()
+        return widgetService.getAllWidgets().toList()
     }
 
     @GetMapping("/{id}")
@@ -31,14 +27,14 @@ class WidgetRestController() {
     }
 
     @PostMapping
-    fun postMethod(@RequestBody widget: Widget): ResponseEntity<Widget> {
+    fun postWidget(@RequestBody widget: WidgetDTO): ResponseEntity<Widget> {
         widgetService.checkValidParameters(widget)
         val newWidget = widgetService.createWidget(widget)
         return ResponseEntity(newWidget, HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")
-    fun putMethod(@PathVariable id: Int, @RequestBody widget: Widget): ResponseEntity<Widget?> {
+    fun putWidget(@PathVariable id: Int, @RequestBody widget: WidgetDTO): ResponseEntity<Widget?> {
         widgetService.checkIdCorrect(id)
         widgetService.checkValidParameters(widget)
         val updateWidget = widgetService.updateWidget(id, widget)
@@ -46,7 +42,7 @@ class WidgetRestController() {
     }
 
     @DeleteMapping("/{id}")
-    fun deleteMethod(@PathVariable id: Int): ResponseEntity<Widget?> {
+    fun deleteWidget(@PathVariable id: Int): ResponseEntity<Widget?> {
         widgetService.checkIdCorrect(id)
         val updateWidget = widgetService.deleteWidget(id)
 
@@ -54,33 +50,44 @@ class WidgetRestController() {
     }
 
 
-    @ExceptionHandler(value = [WidgetNotFound::class])
-    fun handleNotFoundWidget(ex: WidgetNotFound): ResponseEntity<ApiError> {
-        val error = ApiError(400, ex.message ?: "Ошибка в параметрах")
-        println(" Ошибка проверки параметров: ${ex.message}")
+    @ExceptionHandler(value = [WidgetNotFound::class, ParameterValueNotFound::class, ParameterValueIsNegative::class, ParameterValueNotUnique::class])
+    fun handleErrors(ex: RuntimeException): ResponseEntity<ApiError> {
+
+        val exMessage = when (ex) {
+            is ParameterValueIsNegative -> {
+                ex.message ?: NEGATIVE_VALUE
+            }
+
+            is ParameterValueNotUnique -> {
+                ex.message ?: Z_NOT_UNIQUE
+            }
+
+            is WidgetNotFound -> {
+                ex.message ?: ERROR_NOT_FOUND
+            }
+
+            is ParameterValueNotFound -> {
+                ex.message ?: ERROR_NULL_VALIDATE_PARAMETER
+            }
+
+            else -> {
+                ex.message ?: NOT_RECOGNIZE
+            }
+        }
+        val error = ApiError(400, ex.message ?: ERROR_NOT_FOUND)
+
+        println(exMessage)
         return ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
     }
 
 
-    @ExceptionHandler(value = [ParameterValueNotFound::class])
-    fun handleParameterIsNull(ex: ParameterValueNotFound): ResponseEntity<ApiError> {
-        val error = ApiError(400, ex.message ?: "Ошибка в параметрах")
-        println(" Ошибка проверки параметров: ${ex.message}")
-        return ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
+    companion object {
+        const val ERROR_NOT_FOUND = "Виджет не найден"
+        const val ERROR_NULL_VALIDATE_PARAMETER = "Ошибка проверки параметров null"
+        const val NEGATIVE_VALUE = "Отрицательное значение"
+        const val Z_NOT_UNIQUE = "Параметр Z не уникальный"
+        const val NOT_RECOGNIZE = "Неизвестная ошибка"
     }
-
-    @ExceptionHandler(value = [ParameterValueIsNegative::class])
-    fun handleParameterIsNegative(ex: ParameterValueIsNegative): ResponseEntity<ApiError> {
-        val error = ApiError(400, ex.message ?: "Отрицательное значение")
-        return ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
-    }
-
-    @ExceptionHandler(value = [ParameterValueNotUnique::class])
-    fun handleParameterIsNotUnique(ex: ParameterValueNotUnique): ResponseEntity<ApiError> {
-        val error = ApiError(400, ex.message ?: "Параметр Z не уникальный")
-        return ResponseEntity<ApiError>(error, HttpStatus.BAD_REQUEST)
-    }
-
 
 }
 
