@@ -5,13 +5,16 @@ import com.example.demo.widget.exception.ParameterValueNotFound
 import com.example.demo.widget.exception.WidgetNotFound
 import com.example.demo.widget.model.Widget
 import com.example.demo.widget.model.WidgetDTO
-import com.example.demo.widget.repository.WidgetRepository
-import org.springframework.beans.factory.annotation.Autowired
+import com.example.demo.widget.repository.sql.WidgetRepository
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
-class WidgetService(@Autowired private val widgetRepository: WidgetRepository) {
+class WidgetService(
+//    @Qualifier("widgetMemoryRepositoryImpl") private val widgetRepository: WidgetRepository
+    @Qualifier("widgetH2RepositoryImpl") private val widgetRepository: WidgetRepository
+) {
 
     @Synchronized
     fun getWidgetById(id: Long): Widget? {

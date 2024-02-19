@@ -2,7 +2,7 @@ package com.example.demo.widget.service
 
 import com.example.demo.widget.model.Widget
 import com.example.demo.widget.model.WidgetDTO
-import com.example.demo.widget.repository.WidgetRepository
+import com.example.demo.widget.repository.WidgetRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -15,11 +15,11 @@ import java.util.concurrent.atomic.AtomicInteger
 
 @SpringBootTest
 class WidgetConcurrentReadTest() {
-    val widgetRepository = WidgetRepository()
+    val widgetRepositoryImpl = WidgetRepositoryImpl()
 
     @Test
     fun concurrentlyReadingWidget(): Unit = runBlocking {
-        val widgetService = WidgetService(widgetRepository)
+        val widgetService = WidgetService(widgetRepositoryImpl)
         val widgetId = 5L
 
         val updateRequest1 = WidgetDTO(

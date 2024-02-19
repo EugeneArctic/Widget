@@ -2,17 +2,17 @@ package com.example.demo.widget.service
 
 import com.example.demo.widget.model.Widget
 import com.example.demo.widget.model.WidgetDTO
-import com.example.demo.widget.repository.WidgetRepository
+import com.example.demo.widget.repository.WidgetRepositoryImpl
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.concurrent.ConcurrentSkipListSet
 
 class WidgetServiceTest {
-    private val widgetRepository = WidgetRepository()
+    private val widgetRepositoryImpl = WidgetRepositoryImpl()
 
     @Test
     fun addWidgetByZOrder1() {
-        val widgetService = WidgetService(widgetRepository)
+        val widgetService = WidgetService(widgetRepositoryImpl)
         val widget1 = WidgetDTO(null, 111, 111, 1, 111, 111, null)
         val widget2 = WidgetDTO(null, 222, 222, 2, 222, 222, null)
         val widget3 = WidgetDTO(null, 333, 333, 3, 333, 333, null)
@@ -42,7 +42,7 @@ class WidgetServiceTest {
 
     @Test
     fun addWidgetByZOrder2() {
-        val widgetService = WidgetService(widgetRepository)
+        val widgetService = WidgetService(widgetRepositoryImpl)
         val widget1 = WidgetDTO(null, 111, 111, 1, 111, 111, null)
         val widget2 = WidgetDTO(null, 222, 222, 5, 222, 222, null)
         val widget3 = WidgetDTO(null, 333, 333, 6, 333, 333, null)
@@ -73,7 +73,7 @@ class WidgetServiceTest {
 
     @Test
     fun addWidgetByZOrder3() {
-        val widgetService = WidgetService(widgetRepository)
+        val widgetService = WidgetService(widgetRepositoryImpl)
         val widget1 = WidgetDTO(null, 111, 111, 1, 111, 111, null)
         val widget2 = WidgetDTO(null, 222, 222, 2, 222, 222, null)
         val widget3 = WidgetDTO(null, 333, 333, 4, 333, 333, null)
@@ -105,7 +105,7 @@ class WidgetServiceTest {
     @Test
     fun addWidgetByZOrder4() {
 
-        val widgetService = WidgetService(widgetRepository)
+        val widgetService = WidgetService(widgetRepositoryImpl)
 
         val widget1 = WidgetDTO(null, 111, 111, 1, 111, 111, null)
         val widget2 = WidgetDTO(null, 222, 222, 2, 222, 222, null)
@@ -141,7 +141,7 @@ class WidgetServiceTest {
     @Test
     fun addWidgetByZOrder5() {
 
-        val widgetService = WidgetService(widgetRepository)
+        val widgetService = WidgetService(widgetRepositoryImpl)
 
         val widget1 = WidgetDTO(null, 111, 111, -1, 111, 111, null)
         val widget2 = WidgetDTO(null, 222, 222, -2, 222, 222, null)
@@ -176,7 +176,7 @@ class WidgetServiceTest {
 
     @Test
     fun addWidgetByZOrder6() {
-        val widgetService = WidgetService(widgetRepository)
+        val widgetService = WidgetService(widgetRepositoryImpl)
         val widget1 = WidgetDTO(null, 111, 111, -1, 111, 111, null)
         val widget2 = WidgetDTO(null, 222, 222, -5, 222, 222, null)
         val widget3 = WidgetDTO(null, 333, 333, -6, 333, 333, null)
@@ -206,7 +206,7 @@ class WidgetServiceTest {
 
     @Test
     fun addWidgetByZOrder7() {
-        val widgetService = WidgetService(widgetRepository)
+        val widgetService = WidgetService(widgetRepositoryImpl)
         val widget1 = WidgetDTO(null, 111, 111, -1, 111, 111, null)
         val widget2 = WidgetDTO(null, 222, 222, -2, 222, 222, null)
         val widget3 = WidgetDTO(null, 333, 333, -4, 333, 333, null)
@@ -237,7 +237,7 @@ class WidgetServiceTest {
 
     @Test
     fun addWidgetByZOrder8() {
-        val widgetService = WidgetService(widgetRepository)
+        val widgetService = WidgetService(widgetRepositoryImpl)
         val widget1 = WidgetDTO(null, 111, 111, -10, 111, 111, null)
         val widget2 = WidgetDTO(null, 222, 222, 20, 222, 222, null)
         val widget3 = WidgetDTO(null, 333, 333, 5, 333, 333, null)
@@ -268,7 +268,7 @@ class WidgetServiceTest {
     @Test
     fun updateWidgetDTO() {
 
-        val widgetService = WidgetService(widgetRepository)
+        val widgetService = WidgetService(widgetRepositoryImpl)
 
         val widget1 = WidgetDTO(null, 111, 111, 1, 111, 111, null)
         val widget2 = WidgetDTO(null, 222, 222, 2, 222, 222, null)

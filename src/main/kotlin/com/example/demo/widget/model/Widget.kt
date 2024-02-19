@@ -3,13 +3,13 @@ package com.example.demo.widget.model
 import java.time.LocalDateTime
 
 
-data class Widget(
-    var id: Long,
-    var x: Int,
-    var y: Int,
-    var zIndex: Int,
-    var width: Int,
-    var height: Int,
-    var dateLastUpdate: LocalDateTime
+ open class Widget(
+     open var id: Long,
+     open var x: Int,
+     open var y: Int,
+     open var zIndex: Int,
+     open var width: Int,
+     open var height: Int,
+     open var dateLastUpdate: LocalDateTime
 )
 
