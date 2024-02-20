@@ -2,13 +2,13 @@ package com.example.demo.widget.service
 
 import com.example.demo.widget.model.Widget
 import com.example.demo.widget.model.WidgetDTO
-import com.example.demo.widget.repository.WidgetRepositoryImpl
+import com.example.demo.widget.repository.WidgetMemoryRepositoryImpl
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.concurrent.ConcurrentSkipListSet
 
 class WidgetServiceTest {
-    private val widgetRepositoryImpl = WidgetRepositoryImpl()
+   private val widgetRepositoryImpl = WidgetMemoryRepositoryImpl()
 
     @Test
     fun addWidgetByZOrder1() {

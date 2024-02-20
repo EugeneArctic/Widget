@@ -11,10 +11,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
-class WidgetService(
-//    @Qualifier("widgetMemoryRepositoryImpl") private val widgetRepository: WidgetRepository
-    @Qualifier("widgetH2RepositoryImpl") private val widgetRepository: WidgetRepository
-) {
+class WidgetService(private val widgetRepository: WidgetRepository) {
 
     @Synchronized
     fun getWidgetById(id: Long): Widget? {
@@ -34,7 +31,7 @@ class WidgetService(
             val widget = handlerForNullZ(widgetDTO)
             widget.id = it.id
             changeZIndexWidgetListForUpdate(widget)
-            widgetRepository.update(id,widget)
+            widgetRepository.update(id, widget)
         }
         return updateWidget
     }
@@ -68,22 +65,21 @@ class WidgetService(
         return widget
     }
 
-    private fun handlerForNullZ(widgetDTO: WidgetDTO):Widget {
-            val widgetConcurrentSkipListSet = widgetRepository.findAll()
-            if (widgetConcurrentSkipListSet.isNotEmpty()) {
-                val maxZ = widgetConcurrentSkipListSet.maxBy { it.zIndex }.zIndex.plus(1)
-                widgetDTO.zIndex = maxZ
-            } else {
-                widgetDTO.zIndex = 1
-            }
+    private fun handlerForNullZ(widgetDTO: WidgetDTO): Widget {
+        val widgetConcurrentSkipListSet = widgetRepository.findAll()
+        if (widgetConcurrentSkipListSet.isNotEmpty()) {
+            val maxZ = widgetConcurrentSkipListSet.maxBy { it.zIndex }.zIndex.plus(1)
+            widgetDTO.zIndex = maxZ
+        } else {
+            widgetDTO.zIndex = 1
+        }
 
         return transformToWidget(widgetDTO)
     }
 
     fun checkValidParameters(widget: WidgetDTO) {
         val nullValueParameterList = listOf(
-            "x" to widget.x, "y" to widget.y,
-            "height" to widget.height, "width" to widget.width
+            "x" to widget.x, "y" to widget.y, "height" to widget.height, "width" to widget.width
         ).filter { it.second == null }
 
         val negativeValueParameterList = if (nullValueParameterList.isEmpty() || nullValueParameterList.any {
@@ -129,7 +125,7 @@ class WidgetService(
 
     private fun changeZIndexWidgetList(widget: Widget) {
         val widgetConcurrentSkipListSet = widgetRepository.findAll()
-        val updateWidget =  widgetConcurrentSkipListSet.find { it.zIndex == widget.zIndex }
+        val updateWidget = widgetConcurrentSkipListSet.find { it.zIndex == widget.zIndex }
         var previousZ = 0
         if (updateWidget != null) {
             widgetConcurrentSkipListSet.tailSet(updateWidget).forEachIndexed { _, widget1 ->

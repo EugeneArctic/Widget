@@ -3,11 +3,16 @@ package com.example.demo.widget.repository.sql
 import com.example.demo.widget.model.Widget
 import com.example.demo.widget.model.WidgetEntity
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentSkipListSet
 
+
+
+@Profile("sqlDB")
 @Repository
 class WidgetH2RepositoryImpl(@Autowired val widgetEntityRepository: WidgetEntityRepository) : WidgetRepository {
 

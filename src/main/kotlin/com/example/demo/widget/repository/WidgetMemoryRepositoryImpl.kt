@@ -1,10 +1,13 @@
-package com.example.demo.widget.repository.sql
+package com.example.demo.widget.repository
 
 import com.example.demo.widget.model.Widget
+import com.example.demo.widget.repository.sql.WidgetRepository
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentSkipListSet
 
+@Profile("in-mem")
 @Repository
 class WidgetMemoryRepositoryImpl : WidgetRepository {
     private var indexWidget: Int = 0
