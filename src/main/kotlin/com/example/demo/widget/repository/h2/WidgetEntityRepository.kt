@@ -1,4 +1,4 @@
-package com.example.demo.widget.repository.sql
+package com.example.demo.widget.repository.h2
 
 import com.example.demo.widget.model.WidgetEntity
 import org.springframework.data.jpa.repository.JpaRepository

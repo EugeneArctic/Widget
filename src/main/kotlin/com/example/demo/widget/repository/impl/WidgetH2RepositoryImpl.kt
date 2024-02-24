@@ -1,9 +1,10 @@
-package com.example.demo.widget.repository.sql
+package com.example.demo.widget.repository.impl
 
-import com.example.demo.widget.model.Widget
 import com.example.demo.widget.model.WidgetEntity
+import com.example.demo.widget.model.WidgetInterface
+import com.example.demo.widget.repository.WidgetRepository
+import com.example.demo.widget.repository.h2.WidgetEntityRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -17,31 +18,20 @@ import java.util.concurrent.ConcurrentSkipListSet
 class WidgetH2RepositoryImpl(@Autowired val widgetEntityRepository: WidgetEntityRepository) : WidgetRepository {
 
 
-    override fun findById(id: Long): Widget? =
-        widgetEntityRepository.findById(id).get()
+    override fun findById(id: Long): WidgetInterface? = widgetEntityRepository.findById(id).get()
 
-    override fun findAll(): ConcurrentSkipListSet<Widget> {
-        val zIndexComparator = Comparator<Widget> { w1, w2 -> w1.zIndex.compareTo(w2.zIndex) }
+
+    override fun findAll(): ConcurrentSkipListSet<WidgetInterface> {
+        val zIndexComparator = Comparator<WidgetInterface> { w1, w2 -> w1.zIndex.compareTo(w2.zIndex) }
 
         val widgetSet = ConcurrentSkipListSet(zIndexComparator).apply {
-            addAll(widgetEntityRepository.findAll().map { widgetEntity ->
-                // Convert WidgetEntity to Widget
-                Widget(
-                    id = widgetEntity.id,
-                    x = widgetEntity.x,
-                    y = widgetEntity.y,
-                    zIndex = widgetEntity.zIndex,
-                    width = widgetEntity.width,
-                    height = widgetEntity.height,
-                    dateLastUpdate = widgetEntity.dateLastUpdate
-                )
-            })
+            addAll(widgetEntityRepository.findAll())
         }
         return widgetSet
     }
 
 
-    override fun create(widget: Widget): Widget {
+    override fun create(widget: WidgetInterface): WidgetInterface {
         val widgetEntity = WidgetEntity(
             widget.x, // Значение X
             widget.y, // Значение Y
@@ -54,7 +44,7 @@ class WidgetH2RepositoryImpl(@Autowired val widgetEntityRepository: WidgetEntity
     }
 
 
-    override fun delete(id: Long): Widget? {
+    override fun delete(id: Long): WidgetInterface? {
         val deletedWidget = findById(id)
         if (deletedWidget != null) {
             val widgetEntity = WidgetEntity(
@@ -73,7 +63,7 @@ class WidgetH2RepositoryImpl(@Autowired val widgetEntityRepository: WidgetEntity
 
 
     @Transactional
-    override fun update (id: Long, widget: Widget): Widget? {
+    override fun update(id: Long, widget: WidgetInterface): WidgetInterface? {
         // Ищем существующий виджет по ID
         val foundWidgetEntity = widgetEntityRepository.findById(id).orElse(null) ?: return null
 
@@ -88,22 +78,9 @@ class WidgetH2RepositoryImpl(@Autowired val widgetEntityRepository: WidgetEntity
         }
 
         // Сохраняем изменения в базе данных
-        val updatedWidgetEntity = widgetEntityRepository.save(foundWidgetEntity)
-
-        return Widget(
-            id = updatedWidgetEntity.id,
-            x = updatedWidgetEntity.x,
-            y = updatedWidgetEntity.y,
-            zIndex = updatedWidgetEntity.zIndex,
-            width = updatedWidgetEntity.width,
-            height = updatedWidgetEntity.height,
-            dateLastUpdate = updatedWidgetEntity.dateLastUpdate
-        )
+        return widgetEntityRepository.save(foundWidgetEntity)
 
     }
-
-
-
 
 
 

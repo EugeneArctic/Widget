@@ -1,8 +1,8 @@
 package com.example.demo.widget.service
 
-import com.example.demo.widget.model.Widget
 import com.example.demo.widget.model.WidgetDTO
-import com.example.demo.widget.repository.WidgetMemoryRepositoryImpl
+import com.example.demo.widget.model.WidgetInterface
+import com.example.demo.widget.repository.impl.WidgetMemoryRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -43,14 +43,14 @@ class WidgetConcurrentReadTest() {
         val readCount = AtomicInteger()
 
 
-        val readResults = mutableListOf<Widget>()
+        val readResults = mutableListOf<WidgetInterface>()
 
         coroutineScope {
 
             listUpdateRequest.shuffled().forEach { widget ->
                 launch(Dispatchers.Default) {
-                    val widget = widgetService.updateWidget(widgetId, widget)
-                    println("${Thread.currentThread().name} widget: $widget ${LocalDateTime.now()}")
+                    val widget1 = widgetService.updateWidget(widgetId, widget)
+                    println("${Thread.currentThread().name} widget: $widget1 ${LocalDateTime.now()}")
                 }
             }
 

@@ -7,26 +7,24 @@ import java.time.LocalDateTime
 @Entity
 class WidgetEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    override var id: Long = 0, // Значение по умолчанию для id, так как оно будет генерироваться автоматически
+    @GeneratedValue(strategy = GenerationType.AUTO) override var id: Long = 0, // Значение по умолчанию для id, так как оно будет генерироваться автоматически
     override var x: Int,
     override var y: Int,
-    @Column(name = "z_index") // Изменение имени столбца для соответствия соглашениям о наименовании базы данных, если это необходимо
-    override var  zIndex: Int,
+    @Column(name = "z_index") override // Изменение имени столбца для соответствия соглашениям о наименовании базы данных, если это необходимо
+    var  zIndex: Int,
     override var width: Int,
     override var height: Int,
-    @Column(name = "date_last_update")
-    override var dateLastUpdate: LocalDateTime
-) : Widget(id, x, y, zIndex, width, height, dateLastUpdate) {
+    @Column(name = "date_last_update") override var dateLastUpdate: LocalDateTime
+) : WidgetInterface {
 
     constructor() : this(
-        id = 0, // ID будет сгенерировано автоматически
+        id = 0,
         x = 0,
         y = 0,
-        zIndex = 0, // Устанавливаем zIndex в значение по умолчанию
+        zIndex = 0,
         width = 0,
         height = 0,
-        dateLastUpdate = LocalDateTime.now() // Устанавливаем текущее время
+        dateLastUpdate = LocalDateTime.now()
     )
     constructor(x: Int, y: Int, zIndex: Int, width: Int, height: Int) : this(
         x = x,
@@ -38,5 +36,6 @@ class WidgetEntity(
         dateLastUpdate = LocalDateTime.now() // Устанавливаем текущее время
     )
 
-}
 
+
+}
