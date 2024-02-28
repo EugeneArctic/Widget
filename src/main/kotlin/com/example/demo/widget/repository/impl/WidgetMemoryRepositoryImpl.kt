@@ -1,7 +1,7 @@
-package com.example.demo.widget.repository
+package com.example.demo.widget.repository.impl
 
-import com.example.demo.widget.model.Widget
-import com.example.demo.widget.repository.sql.WidgetRepository
+import com.example.demo.widget.model.WidgetInterface
+import com.example.demo.widget.repository.WidgetRepository
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
@@ -12,12 +12,12 @@ import java.util.concurrent.ConcurrentSkipListSet
 class WidgetMemoryRepositoryImpl : WidgetRepository {
     private var indexWidget: Int = 0
     private val widgetList =
-        ConcurrentSkipListSet(compareBy(Widget::zIndex)) //private val widgetList = TreeSet(compareBy(Widget::z)) // для провоцирования гонки
+        ConcurrentSkipListSet(compareBy(WidgetInterface::zIndex)) //private val widgetList = TreeSet(compareBy(Widget::z)) // для провоцирования гонки
 
-    override fun findById(id: Long): Widget? = widgetList.find { it.id == id }
-    override fun findAll() = widgetList//widgetList.sortedBy { it.z }
+    override fun findById(id: Long): WidgetInterface? = widgetList.find { it.id == id }
+    override fun findAll(): ConcurrentSkipListSet<WidgetInterface> = widgetList//widgetList.sortedBy { it.z }
 
-    override fun create(widget: Widget): Widget {
+    override fun create(widget: WidgetInterface): WidgetInterface {
         if (widget.id.toInt() == -1) {
             indexWidget++
             widget.id = indexWidget.toLong()
@@ -27,7 +27,7 @@ class WidgetMemoryRepositoryImpl : WidgetRepository {
     }
 
 
-    override fun delete(id: Long): Widget? {
+    override fun delete(id: Long): WidgetInterface? {
         val deletedWidget = findById(id)
         if (deletedWidget != null) {
             widgetList.remove(deletedWidget)
@@ -36,7 +36,8 @@ class WidgetMemoryRepositoryImpl : WidgetRepository {
     }
 
 
-    override fun update(id: Long, widget: Widget): Widget? {
+
+    override fun update(id: Long, widget: WidgetInterface): WidgetInterface? {
         val foundWidget = findById(id)
         foundWidget?.apply {
             zIndex = widget.zIndex

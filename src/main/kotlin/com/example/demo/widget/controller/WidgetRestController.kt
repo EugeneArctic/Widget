@@ -1,9 +1,10 @@
-package com.example.demo.widget.rest
+package com.example.demo.widget.controller
 
 import com.example.demo.widget.exception.*
-import com.example.demo.widget.model.Widget
+import com.example.demo.widget.model.WidgetInterface
 import com.example.demo.widget.model.WidgetDTO
 import com.example.demo.widget.service.WidgetService
+import com.example.demo.widget.service.mapToDTOWidget
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
@@ -21,8 +22,8 @@ import org.springframework.web.bind.annotation.*
 class WidgetRestController(@Autowired private val widgetService: WidgetService) {
 
     @GetMapping
-    fun getAllWidgets(): List<Widget> {
-        return widgetService.getAllWidgets().toList()
+    fun getAllWidgets(): List<WidgetDTO> {
+        return  widgetService.getAllWidgets().map { mapToDTOWidget(it) }
     }
 
     @Operation(summary = "Get widget by it's id")
@@ -34,33 +35,35 @@ class WidgetRestController(@Autowired private val widgetService: WidgetService) 
         ApiResponse(responseCode = "404", description = "Did not find widget by id", content = [Content()])]
     )
     @GetMapping("/{id}")
-    fun getWidgetsById(@PathVariable id: Long): ResponseEntity<Widget?> {
+    fun getWidgetsById(@PathVariable id: Long): ResponseEntity<WidgetDTO?> {
         widgetService.checkIdCorrect(id)
         val widget = widgetService.getWidgetById(id)
-        return ResponseEntity(widget, HttpStatus.OK)
+        val dtoWidget = widget?.let { mapToDTOWidget(it) }
+        return ResponseEntity(dtoWidget, HttpStatus.OK)
     }
 
     @PostMapping
-    fun createWidget(@RequestBody widget: WidgetDTO): ResponseEntity<Widget> {
+    fun createWidget(@RequestBody widget: WidgetDTO): ResponseEntity<WidgetInterface> {
         widgetService.checkValidParameters(widget)
         val newWidget = widgetService.createWidget(widget)
         return ResponseEntity(newWidget, HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")
-    fun updateWidget(@PathVariable id: Long, @RequestBody widget: WidgetDTO): ResponseEntity<Widget?> {
+    fun updateWidget(@PathVariable id: Long, @RequestBody widget: WidgetDTO): ResponseEntity<WidgetDTO?> {
         widgetService.checkIdCorrect(id)
         widgetService.checkValidParameters(widget)
         val updateWidget = widgetService.updateWidget(id, widget)
-        return ResponseEntity(updateWidget, HttpStatus.CREATED)
+        val dtoWidget = updateWidget?.let { mapToDTOWidget(it) }
+        return ResponseEntity(dtoWidget, HttpStatus.CREATED)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteWidget(@PathVariable id: Long): ResponseEntity<Widget?> {
+    fun deleteWidget(@PathVariable id: Long): ResponseEntity<WidgetDTO?> {
         widgetService.checkIdCorrect(id)
-        val updateWidget = widgetService.deleteWidget(id)
-
-        return ResponseEntity(updateWidget, HttpStatus.NO_CONTENT)
+        val deletedWidget = widgetService.deleteWidget(id)
+        val dtoWidget = deletedWidget?.let { mapToDTOWidget(it) }
+        return ResponseEntity(dtoWidget, HttpStatus.NO_CONTENT)
     }
 
 

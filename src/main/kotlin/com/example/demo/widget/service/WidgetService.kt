@@ -3,10 +3,9 @@ package com.example.demo.widget.service
 import com.example.demo.widget.exception.ParameterValueIsNegative
 import com.example.demo.widget.exception.ParameterValueNotFound
 import com.example.demo.widget.exception.WidgetNotFound
-import com.example.demo.widget.model.Widget
 import com.example.demo.widget.model.WidgetDTO
-import com.example.demo.widget.repository.sql.WidgetRepository
-import org.springframework.beans.factory.annotation.Qualifier
+import com.example.demo.widget.model.WidgetInterface
+import com.example.demo.widget.repository.WidgetRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -14,18 +13,18 @@ import java.time.LocalDateTime
 class WidgetService(private val widgetRepository: WidgetRepository) {
 
     @Synchronized
-    fun getWidgetById(id: Long): Widget? {
+    fun getWidgetById(id: Long): WidgetInterface? {
         return widgetRepository.findById(id)
     }
 
     @Synchronized
-    fun deleteWidget(id: Long): Widget? {
+    fun deleteWidget(id: Long): WidgetInterface? {
         return widgetRepository.delete(id)
     }
 
     @Synchronized
-    fun updateWidget(id: Long, widgetDTO: WidgetDTO): Widget? {
-        transformToWidget(widgetDTO)
+    fun updateWidget(id: Long, widgetDTO: WidgetDTO): WidgetInterface? {
+        mapToWidgetInterface(widgetDTO)
         val updateWidget = widgetRepository.findById(id)
         updateWidget?.let {
             val widget = handlerForNullZ(widgetDTO)
@@ -36,28 +35,12 @@ class WidgetService(private val widgetRepository: WidgetRepository) {
         return updateWidget
     }
 
-    private fun transformToWidget(widgetDTO: WidgetDTO): Widget {
-        val widget = widgetDTO.let { dto ->
-            Widget(
-                id = dto.id ?: -1,
-                x = dto.x ?: -1,
-                y = dto.y ?: -1,
-                zIndex = dto.zIndex ?: -1,
-                width = dto.width ?: -1,
-                height = dto.height ?: -1,
-                dateLastUpdate = dto.dateLastUpdate ?: LocalDateTime.now().minusDays(1)
-            )
-        }
-        return widget
-    }
-
-
     @Synchronized
-    fun createWidget(widgetDTO: WidgetDTO): Widget {
+    fun createWidget(widgetDTO: WidgetDTO): WidgetInterface {
         val widget = if (widgetDTO.zIndex == null) {
             handlerForNullZ(widgetDTO)
         } else {
-            transformToWidget(widgetDTO)
+            mapToWidgetInterface(widgetDTO)
         }
         changeZIndexWidgetList(widget)
         widget.dateLastUpdate = LocalDateTime.now()
@@ -65,7 +48,7 @@ class WidgetService(private val widgetRepository: WidgetRepository) {
         return widget
     }
 
-    private fun handlerForNullZ(widgetDTO: WidgetDTO): Widget {
+    private fun handlerForNullZ(widgetDTO: WidgetDTO): WidgetInterface {
         val widgetConcurrentSkipListSet = widgetRepository.findAll()
         if (widgetConcurrentSkipListSet.isNotEmpty()) {
             val maxZ = widgetConcurrentSkipListSet.maxBy { it.zIndex }.zIndex.plus(1)
@@ -74,7 +57,7 @@ class WidgetService(private val widgetRepository: WidgetRepository) {
             widgetDTO.zIndex = 1
         }
 
-        return transformToWidget(widgetDTO)
+        return mapToWidgetInterface(widgetDTO)
     }
 
     fun checkValidParameters(widget: WidgetDTO) {
@@ -106,7 +89,7 @@ class WidgetService(private val widgetRepository: WidgetRepository) {
     }
 
 
-    private fun changeZIndexWidgetListForUpdate(updateWidget: Widget) {
+    private fun changeZIndexWidgetListForUpdate(updateWidget: WidgetInterface) {
         var previousZ = 0
         widgetRepository.findAll().tailSet(updateWidget).forEachIndexed { _, widget1 ->
             val nextZ = widget1.zIndex.plus(1)
@@ -123,7 +106,7 @@ class WidgetService(private val widgetRepository: WidgetRepository) {
     fun getAllWidgets() = widgetRepository.findAll()//widgetList.values
 
 
-    private fun changeZIndexWidgetList(widget: Widget) {
+    private fun changeZIndexWidgetList(widget: WidgetInterface) {
         val widgetConcurrentSkipListSet = widgetRepository.findAll()
         val updateWidget = widgetConcurrentSkipListSet.find { it.zIndex == widget.zIndex }
         var previousZ = 0
