@@ -1,15 +1,20 @@
 package com.example.demo.widget.model
 
+import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
 
-data class Widget(
-    var id: Long,
-    var x: Int,
-    var y: Int,
-    var zIndex: Int,
-    var width: Int,
-    var height: Int,
-    var dateLastUpdate: LocalDateTime
+ open class Widget(
+     open var id: Long,
+     @NotNull
+     open var x: Int,
+     @NotNull
+     open var y: Int,
+     open var zIndex: Int,
+     @NotNull
+     open var width: Int,
+     @NotNull
+     open var height: Int,
+     open var dateLastUpdate: LocalDateTime
 )
 

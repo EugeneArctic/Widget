@@ -1,20 +1,23 @@
 package com.example.demo.widget.repository
 
 import com.example.demo.widget.model.Widget
+import com.example.demo.widget.repository.sql.WidgetRepository
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentSkipListSet
 
+@Profile("in-mem")
 @Repository
-class WidgetRepository {
+class WidgetMemoryRepositoryImpl : WidgetRepository {
     private var indexWidget: Int = 0
     private val widgetList =
         ConcurrentSkipListSet(compareBy(Widget::zIndex)) //private val widgetList = TreeSet(compareBy(Widget::z)) // для провоцирования гонки
 
-    fun findById(id: Long) = widgetList.find { it.id == id }
-    fun findAll() = widgetList//widgetList.sortedBy { it.z }
+    override fun findById(id: Long): Widget? = widgetList.find { it.id == id }
+    override fun findAll() = widgetList//widgetList.sortedBy { it.z }
 
-    fun create(widget: Widget): Widget {
+    override fun create(widget: Widget): Widget {
         if (widget.id.toInt() == -1) {
             indexWidget++
             widget.id = indexWidget.toLong()
@@ -24,7 +27,7 @@ class WidgetRepository {
     }
 
 
-    fun delete(id: Long): Widget? {
+    override fun delete(id: Long): Widget? {
         val deletedWidget = findById(id)
         if (deletedWidget != null) {
             widgetList.remove(deletedWidget)
@@ -33,7 +36,7 @@ class WidgetRepository {
     }
 
 
-    fun update(id:Long, widget: Widget): Widget? {
+    override fun update(id: Long, widget: Widget): Widget? {
         val foundWidget = findById(id)
         foundWidget?.apply {
             zIndex = widget.zIndex
